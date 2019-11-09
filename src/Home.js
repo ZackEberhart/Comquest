@@ -27,6 +27,15 @@ export default class Home extends React.Component {
         latitudeDelta: 0.0922,
         longitudeDelta: 0.0421,
       },
+      bugs: [
+        {
+          bid: "samplebug", 
+          lat:41.69764,
+          long:-86.23,
+          title:"Cool bug",
+          lvl:9001
+        }
+      ]
     };
   }
 
@@ -35,6 +44,8 @@ export default class Home extends React.Component {
       this.setState({
         errorMessage: 'Oops, this will not work on Sketch in an Android emulator. Try it on your device!',
       });
+    }else{
+      this.getLocalBugs()
     }
   }
 
@@ -70,6 +81,22 @@ export default class Home extends React.Component {
     this.setState({isVisible:false})
   }
 
+  getLocalBugs = () =>{
+    //Query the database for all bugs based on current region
+    bugs = this.state.bugs
+    this.setState({bugs})
+  }
+
+  addBug = (bugState) =>{
+    //Fake method, mocking functionality of adding to a database
+    this.setState((prevState)=>{
+      return {
+        bugs:prevState.bugs.concat([bugState])
+      }
+    })
+    
+  }
+
   render() {
     return(
       <View style={styles.container}>
@@ -81,17 +108,35 @@ export default class Home extends React.Component {
             showsUserLocation={true}
             initialRegion={this.state.region}
             onMapReady={this.moveToCurrent}
+            onRegionChangeComplete={this.getLocalBugs}
         >
-          <Marker
-            ref={ref => {
-              this.marker1 = ref;
-            }}
-            coordinate={{latitude: this.state.region.latitude + .02, longitude: this.state.region.longitude-.01}}
-            title="This is a native view"
-            description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation"
-          />
+        {this.state.bugs.map((value, index) => {
+          return(
+            <Marker
+              // ref={ref => {
+              //   this.marker1 = ref;
+              // }}
+              key = {index}
+              coordinate={{latitude: value.lat, longitude: value.long}}
+              title={value.title}
+            >
+              <Callout 
+                style={styles.plainView}
+                onPress={()=>{this.props.navigation.navigate("ShowBug", value.bid)}}
+              >
+                <View>
+                  <Text>This is a plain view</Text>
+                </View>
+              </Callout>
+            </Marker>
+          )
+        })}
         </MapView>
-        <FAB buttonColor="red" iconTextColor="#FFFFFF" onClickAction={() => this.props.navigation.navigate("NewBug")}/>
+        <FAB 
+          buttonColor="red" 
+          iconTextColor="#FFFFFF" 
+          onClickAction={() => this.props.navigation.navigate("NewBug", {callback:this.addBug, region:this.state.region})}
+        />
       </View>
     ) 
   }
@@ -108,5 +153,8 @@ const styles = StyleSheet.create({
     // flex: 1,
     width: Dimensions.get('window').width,
     height: Dimensions.get('window').height,
+  },
+  plainView: {
+    width: 200,
   },
 });

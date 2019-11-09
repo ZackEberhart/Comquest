@@ -8,11 +8,6 @@ export default class PostForm extends React.Component {
 
   constructor(props){
     super(props);
-    // this.state={
-    //   selectedColorIndex:0,
-    //   selectedColor:"#a21344",
-    //   boardColors:appStore.boardColors,
-    // }
     this.state = {
       image: null,
     };
@@ -36,7 +31,7 @@ export default class PostForm extends React.Component {
       mediaTypes: ImagePicker.MediaTypeOptions.All,
     });
     if (!result.cancelled) {
-      this.setState({ image: result.uri });
+      this.setState({ image: result });
     }
   };
 
@@ -51,6 +46,8 @@ export default class PostForm extends React.Component {
         <Text> Title </Text>
         <TextInput
           style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+          onChangeText={(title) => this.setState({title})}
+          value={this.state.title}
         />
         <Text> Picture </Text>
         <Button
@@ -59,8 +56,7 @@ export default class PostForm extends React.Component {
         />
         {image &&
           <View>
-          <Text> {this.state.image} </Text>
-          <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />
+          <Image source={{ uri: image.uri }} style={{ width: 200, height: 200 }} />
           </View>
         }
         <Text> Description </Text>
@@ -69,6 +65,8 @@ export default class PostForm extends React.Component {
           numberOfLines={4}
           textAlignVertical='top'
           style={{  borderColor: 'gray',borderWidth: 1 }}
+          onChangeText={(desc) => this.setState({desc})}
+          value={this.state.desc}
         />
         <Button
           onPress = {()=>this.props.callback(this.state)}

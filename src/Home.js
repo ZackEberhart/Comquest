@@ -1,3 +1,4 @@
+GLOBAL = require('./globals');
 import React from 'react';
 import { StyleSheet, Button, Alert, TouchableNativeFeedback, Modal, Image, Text, View, Dimensions, Platform, FlatList, BackHandler} from 'react-native';
 import Constants from 'expo-constants';
@@ -31,7 +32,7 @@ export default class Home extends React.Component {
         {
           bid: "samplebug", 
           lat:41.69764,
-          long:-86.23,
+          lon:-86.23,
           title:"Cool bug",
           lvl:9001
         }
@@ -45,7 +46,7 @@ export default class Home extends React.Component {
         errorMessage: 'Oops, this will not work on Sketch in an Android emulator. Try it on your device!',
       });
     }else{
-      this.getLocalBugs()
+      // this.getLocalBugs()
     }
   }
 
@@ -61,7 +62,7 @@ export default class Home extends React.Component {
     let region = {
         latitude: parseFloat(location.coords.latitude),
         longitude: parseFloat(location.coords.longitude),
-        latitudeDelta: .05,
+        latitudeDelta: .1,
         longitudeDelta: .05
     };
     await this.setState({
@@ -81,10 +82,26 @@ export default class Home extends React.Component {
     this.setState({isVisible:false})
   }
 
-  getLocalBugs = () =>{
-    //Query the database for all bugs based on current region
-    bugs = this.state.bugs
-    this.setState({bugs})
+  getLocalBugs = async() =>{
+    this.setState({loading:true})
+    await fetch("http://ec2-3-133-139-55.us-east-2.compute.amazonaws.com/api/v1/getlocal?minlon="+ String(this.state.region.longitude-this.state.region.longitudeDelta)
+                + "&maxlon=" + String(this.state.region.longitude+this.state.region.longitudeDelta )
+                + "&minlat=" + String(this.state.region.latitude-this.state.region.latitudeDelta )
+                + "&maxlat=" + String(this.state.region.latitude+this.state.region.latitudeDelta),{
+      method: "GET",
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+      .then(response => response.json())
+      .then(async response => {
+        console.log("items sucfdsfds");
+        await this.setState({bugs:response})
+      })
+      .catch(error => {
+        console.log("bug get error", error);
+        return null
+      })
   }
 
   addBug = (bugState) =>{
@@ -94,10 +111,36 @@ export default class Home extends React.Component {
         bugs:prevState.bugs.concat([bugState])
       }
     })
-    
+  }
+
+  onMapChange = async (region) =>{
+    await this.setState({
+        region: region
+    });
+    this.getLocalBugs()
+
   }
 
   render() {
+    bugs = this.state.bugs
+    markers = bugs.map((value, index) => {
+      return(
+        <Marker
+          key = {index}
+          coordinate={{latitude: parseFloat(value.lat), longitude: parseFloat(value.lon)}}
+          title={value.title}
+        >
+          <Callout 
+            style={styles.plainView}
+            onPress={()=>{console.log(value.bid); this.props.navigation.navigate("ShowBug", {bid:value.bid})}}
+          >
+            <View>
+              <Text>This is a plain view</Text>
+            </View>
+          </Callout>
+        </Marker>
+      )
+    })
     return(
       <View style={styles.container}>
         <MapView
@@ -108,29 +151,10 @@ export default class Home extends React.Component {
             showsUserLocation={true}
             initialRegion={this.state.region}
             onMapReady={this.moveToCurrent}
-            onRegionChangeComplete={this.getLocalBugs}
+            onRegionChangeComplete={this.onMapChange}
         >
-        {this.state.bugs.map((value, index) => {
-          return(
-            <Marker
-              // ref={ref => {
-              //   this.marker1 = ref;
-              // }}
-              key = {index}
-              coordinate={{latitude: value.lat, longitude: value.long}}
-              title={value.title}
-            >
-              <Callout 
-                style={styles.plainView}
-                onPress={()=>{this.props.navigation.navigate("ShowBug", value.bid)}}
-              >
-                <View>
-                  <Text>This is a plain view</Text>
-                </View>
-              </Callout>
-            </Marker>
-          )
-        })}
+
+        {markers}
         </MapView>
         <FAB 
           buttonColor="red" 

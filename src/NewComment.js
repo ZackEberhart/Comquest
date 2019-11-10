@@ -3,33 +3,78 @@ import { StyleSheet, Text, TextInput, View, Image, Platform, StatusBar, FlatList
 import * as ImagePicker from 'expo-image-picker';
 import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
-import PostForm from './PostForm.js'
-
+import CommentForm from './CommentForm.js'
 
 export default class NewComment extends React.Component {
 
   constructor(props){
     super(props);
     this.state = {
+      loading:false
     };
   }
 
-  submitComment = (state) =>{
-    //Check if data is valid
-    //If so:
-    //  Submit bug to the server
-    //  Navigate to the post
-    //  Flash success msg
-    //If not:
-    //  Flash failure msg
-    console.log(state)
+  createFormData = (photo, body) => {
+    const data = new FormData();
+    if(photo){
+      data.append("image", {
+        name: "coolphoto.jpg",
+        type: "image/jpeg",
+        uri:
+          Platform.OS === "android" ? photo.uri : photo.uri.replace("file://", "")
+      });
+    }
+
+    Object.keys(body).forEach(key => {
+      data.append(key, body[key]);
+    });
+
+    return data;
+  };
+
+  
+  handleUploadPhoto = async (photo, body) => {
+    this.setState({loading:true})
+    console.log(photo)
+    await fetch("http://ec2-3-133-139-55.us-east-2.compute.amazonaws.com/api/v1/comment", {
+      method: "POST",
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      body: this.createFormData(photo, body)
+    })
+      .then(response => response.json())
+      .then(async response => {
+        console.log("upload succes", response);
+        alert("Upload success!");
+        await this.setState({bid:response.bugid})
+      })
+      .catch(error => {
+        console.log("upload error", error);
+        alert("Upload failed!");
+        return null
+      })
+  };
+
+  submitComment = async (state) =>{
+    payload = {
+      uid:1,
+      bugid:this.state.bid,
+      text:state.text,
+    }
+    await this.handleUploadPhoto(state.image, payload)
+    console.log(this.state.bid)
+    if(this.state.bid){
+      this.props.navigation.replace("ShowBug", {bid:this.state.bid})
+    }
   }
 
   render(){
-    let { image } = this.state;
     return(
-      <View style={{ paddingTop: Platform.OS !== 'ios' ? StatusBar.currentHeight : 0 }}>
-        <PostForm callback={this.submitComment}/>
+      <View>
+        <CommentForm 
+          callback={this.submitComment}
+        />
       </View>
     )
   }

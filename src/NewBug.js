@@ -60,7 +60,7 @@ export default class NewBug extends React.Component {
 
   submitBug = async (state) =>{
     payload = {
-      uid:1,
+      uid:GLOBAL.UID,
       title:state.title,
       desc:state.desc,
       lat:this.props.navigation.state.params.region.latitude,

@@ -1,3 +1,4 @@
+GLOBAL = require('./src/globals');
 import React from 'react';
 import { StyleSheet, Text, StatusBar, View, Platform} from 'react-native';
 import { createMaterialTopTabNavigator } from "react-navigation-tabs";
@@ -8,7 +9,6 @@ import Home from './src/Home.js'
 import NewBug from './src/NewBug.js'
 import EditBug from './src/EditBug.js'
 import ShowBug from './src/ShowBug.js'
-import NewComment from './src/NewComment.js'
 import Profile from './src/Profile.js'
 
 
@@ -32,7 +32,6 @@ const StackNavigator = createStackNavigator(
     NewBug: {screen:NewBug},
     EditBug: {screen:EditBug},
     ShowBug: {screen:ShowBug},
-    NewComment: {screen:NewComment},
   },
   {
     initialRouteName: "Home",

@@ -4,7 +4,7 @@ import * as ImagePicker from 'expo-image-picker';
 import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
 
-export default class PostForm extends React.Component {
+export default class CommentForm extends React.Component {
 
   constructor(props){
     super(props);
@@ -43,13 +43,6 @@ export default class PostForm extends React.Component {
     let { image } = this.state;
     return(
       <View>
-        <Text> Title </Text>
-        <TextInput
-          style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
-          onChangeText={(title) => this.setState({title})}
-          value={this.state.title}
-          defaultValue={this.state.bug?this.state.bug.title:""}
-        />
         <Text> Picture </Text>
         <Button
           title="Pick an image from camera roll"
@@ -60,15 +53,14 @@ export default class PostForm extends React.Component {
           <Image source={{ uri: image.uri }} style={{ width: 200, height: 200 }} />
           </View>
         }
-        <Text> Description </Text>
+        <Text> Comment </Text>
         <TextInput
           multiline
           numberOfLines={4}
           textAlignVertical='top'
           style={{  borderColor: 'gray',borderWidth: 1 }}
-          onChangeText={(desc) => this.setState({desc})}
-          value={this.state.desc}
-          defaultValue={this.state.bug?this.state.bug.desc:""}
+          onChangeText={(text) => this.setState({text})}
+          value={this.state.text}
         />
         <Button
           onPress = {()=>this.props.callback(this.state)}
@@ -78,10 +70,6 @@ export default class PostForm extends React.Component {
     )
   }
 }
-
-// const styles = StyleSheet.create({
- 
-// });
 
 
 

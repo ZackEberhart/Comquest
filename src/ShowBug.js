@@ -114,7 +114,7 @@ export default class ShowBug extends React.Component {
             />
           }
           <View>
-            <Image source={{uri:this.state.pic}} style={{ width: 200, height: 200 }}/>
+            <Image source={{uri:this.state.bug.pic}} style={{ width: 200, height: 200 }}/>
           </View>
           <Text> {this.state.bug.bid} </Text>
           <Text> {this.state.bug.uid} </Text>

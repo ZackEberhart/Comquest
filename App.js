@@ -21,6 +21,7 @@ const TabNavigator = createMaterialTopTabNavigator(
     tabBarOptions: {
       style: {
         borderTopWidth: 24,
+        height:1
       },
     }
   }

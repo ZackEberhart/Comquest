@@ -37,14 +37,6 @@ export default class EditBug extends React.Component {
       })
   }
 
-  title
-  lat
-  lon
-  level
-  description
-  pic
-  status
-
   createFormData = (photo, body) => {
     const data = new FormData();
     if(photo){
@@ -97,7 +89,7 @@ export default class EditBug extends React.Component {
     await this.handleUploadPhoto(state.image, payload)
     console.log(payload)
     if(this.state.bid){
-      this.props.navigation.replace("ShowBug", {bid:this.state.bid})
+      this.props.navigation.navigate("ShowBug", {bid:this.state.bid})
     }
   }
 

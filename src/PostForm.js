@@ -3,6 +3,8 @@ import { StyleSheet, Text, TextInput, View, Image, Platform, StatusBar, FlatList
 import * as ImagePicker from 'expo-image-picker';
 import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
+import * as ImageManipulator from 'expo-image-manipulator';
+
 
 export default class PostForm extends React.Component {
 
@@ -31,7 +33,13 @@ export default class PostForm extends React.Component {
       mediaTypes: ImagePicker.MediaTypeOptions.All,
     });
     if (!result.cancelled) {
-      this.setState({ image: result });
+      console.log(result)
+      const manipResult = await ImageManipulator.manipulateAsync(
+        result.uri, [{resize:{width:500}}], { compress: .7, format: ImageManipulator.SaveFormat.JPEG }
+      );
+      console.log(manipResult)
+
+      this.setState({ image: manipResult });
     }
   };
 

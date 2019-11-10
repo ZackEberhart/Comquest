@@ -1,3 +1,5 @@
+GLOBAL = require('./globals');
+
 import React from 'react';
 import { StyleSheet, Text, TextInput, View, Image, Platform, StatusBar, FlatList, Modal, Button, Alert} from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
@@ -58,15 +60,12 @@ export default class NewComment extends React.Component {
 
   submitComment = async (state) =>{
     payload = {
-      uid:1,
-      bugid:this.state.bid,
+      uid:GLOBAL.UID,
+      bugid:this.props.bid,
       text:state.text,
     }
     await this.handleUploadPhoto(state.image, payload)
-    console.log(this.state.bid)
-    if(this.state.bid){
-      this.props.navigation.replace("ShowBug", {bid:this.state.bid})
-    }
+    console.log(this.props.bid)
   }
 
   render(){

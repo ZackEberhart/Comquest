@@ -96,7 +96,7 @@ export default class EditBug extends React.Component {
     }
     await this.handleUploadPhoto(state.image, payload)
     console.log(payload)
-    if(this.props.bid){
+    if(this.state.bid){
       this.props.navigation.replace("ShowBug", {bid:this.state.bid})
     }
   }

@@ -38,7 +38,7 @@ export default class ShowBug extends React.Component {
       .then(async response => {
         console.log("bug succes", response);
         await this.setState({bug:response})
-        console.log(this.state.bug.bid)
+        console.log(this.state.bug.pic)
       })
       .catch(error => {
         console.log("bug get error", error);
@@ -107,12 +107,15 @@ export default class ShowBug extends React.Component {
     return(
       <View style={{ paddingTop: Platform.OS !== 'ios' ? StatusBar.currentHeight : 0 }}>
         <View>
-          {this.state.bug.uid <= 7 &&
+          {this.state.bug.uid == GLOBAL.UID &&
             <Button
               onPress={()=>{this.props.navigation.navigate("EditBug", {bug:this.state.bug, bid:this.state.bid})}}
               title = "Edit bug"
             />
           }
+          <View>
+            <Image source={{uri:this.state.pic}} style={{ width: 200, height: 200 }}/>
+          </View>
           <Text> {this.state.bug.bid} </Text>
           <Text> {this.state.bug.uid} </Text>
           <Text> {this.state.bug.title} </Text>
@@ -135,7 +138,7 @@ export default class ShowBug extends React.Component {
           })}
           </View>
         }
-        <NewComment/>
+        <NewComment bid={this.state.bid}/>
       </View>
     )
   }
